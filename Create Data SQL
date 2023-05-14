@@ -1,0 +1,33 @@
+/* Select * for column names */
+
+SELECT * FROM survey 
+LIMIT 10;
+
+/* find out how many ysers are giving up at different points of the survery */ 
+
+SELECT question, COUNT(DISTINCT user_id) 
+FROM survey 
+GROUP BY question;
+
+/* Find out whether or not users who get more pairs to try on at home will be more likely to make a purchase  */
+
+SELECT * FROM quiz AS q 
+LEFT JOIN home_try_on AS hto 
+ON q.user_id = hto.user_id
+LEFT JOIN purchase AS p 
+ON p.user_id = hto.user_id
+LIMIT 5;
+
+/* create new table to view difference between 3 and 5 glasses at home try on */
+
+WITH funnel AS 
+(SELECT q.user_id, 
+hto.user_id IS NOT NULL AS 'is_home_try_on', hto.number_of_pairs, 
+p.user_id IS NOT NULL as 'is_purchase' 
+FROM quiz AS q 
+LEFT JOIN home_try_on AS hto 
+ON q.user_id = hto.user_id
+LEFT JOIN purchase AS p 
+ON p.user_id = hto.user_id
+LIMIT 10)
+SELECT * FROM funnel;
